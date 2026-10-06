@@ -42,5 +42,27 @@ services:
       - ./.env:/var/www/html/config/.env:ro
     restart: unless-stopped
 
+  attacker:
+    build:
+      context: ./attacker
+      dockerfile: Dockerfile
+    container_name: shadownet-attacker
+    networks:
+      twin-net:
+        ipv4_address: 10.10.0.20
+    volumes:
+      - ./logs:/logs
+      - ./captures:/captures
+      - ./attacker/run_attacks.sh:/root/attacks/run_attacks.sh:ro
+      - ./attacker/passwords.txt:/root/attacks/passwords.txt:ro
+    depends_on:
+      - dvwa
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    stdin_open: true
+    tty: true
+    restart: unless-stopped
+
 volumes:
   db-data:
